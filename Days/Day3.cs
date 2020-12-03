@@ -12,7 +12,6 @@ class Day3 : IDay
 
     public object Part1()
     {
-
         return GetTreeCountForSlope(3, 1);
     }
 
