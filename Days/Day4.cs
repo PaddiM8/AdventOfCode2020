@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Text;
 
 #nullable enable
 class Passport
@@ -79,18 +80,24 @@ enum EyeColor
 
 class Day4 : IDay
 {
-    private readonly string _input;
+    private readonly string[] _lines;
     private readonly List<Passport> _passports = new();
 
     public Day4(string[] lines)
     {
-        _input = string.Join("\n", lines);
+        _lines = lines;
 
-        var passportStrings = _input.Split(new[] { "\n\n" }, StringSplitOptions.RemoveEmptyEntries);
-        foreach (var passportString in passportStrings)
+        var passport = new Passport();
+        foreach (var line in _lines)
         {
-            var fields = passportString.Split(' ', '\n');
-            var passport = new Passport();
+            if (string.IsNullOrEmpty(line))
+            {
+                _passports.Add(passport);
+                passport = new Passport();
+                continue;
+            }
+
+            var fields = line.Split(' ', '\n');
             foreach (var field in fields)
             {
                 var parts = field.Split(':');
@@ -104,8 +111,6 @@ class Day4 : IDay
                 if (key == "ecl") passport.EyeColor = ParseEyeColor(value);
                 if (key == "pid") passport.PassportId = value;
             }
-
-            _passports.Add(passport);
         }
     }
 
