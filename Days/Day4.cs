@@ -36,9 +36,9 @@ class Passport
 
 enum HeightUnit
 {
+    Other,
     Centimeters,
     Inches,
-    Other,
 }
 
 record Height(int Value, HeightUnit Unit)
