@@ -6,47 +6,32 @@ using System.Text.RegularExpressions;
 #nullable enable
 class Passport
 {
-    public BirthYear? BirthYear { get; set; }
-    public IssueYear? IssueYear { get; set; }
-    public ExpirationYear? ExpirationYear { get; set; }
+    public int? BirthYear { get; set; }
+    public int? IssueYear { get; set; }
+    public int? ExpirationYear { get; set; }
     public Height? Height { get; set; }
-    public HairColor? HairColor { get; set; }
+    public string? HairColor { get; set; }
     public EyeColor? EyeColor { get; set; }
-    public PassportId? PassportId { get; set; }
+    public string? PassportId { get; set; }
 
     public bool HasValues =>
-        BirthYear != null &&
-        IssueYear != null &&
-        ExpirationYear != null &&
-        Height != null &&
-        HairColor != null &&
-        EyeColor != null &&
-        PassportId != null;
+       BirthYear != null &&
+       IssueYear != null &&
+       ExpirationYear != null &&
+       Height != null &&
+       HairColor != null &&
+       EyeColor != null &&
+       PassportId != null;
 
     public bool IsValid =>
         HasValues &&
-        BirthYear!.IsValid &&
-        IssueYear!.IsValid &&
-        ExpirationYear!.IsValid &&
+        BirthYear >= 1920 && BirthYear <= 2002 &&
+        IssueYear >= 2010 && IssueYear <= 2020 &&
+        ExpirationYear >= 2020 && ExpirationYear <= 2030 &&
         Height!.IsValid &&
-        HairColor!.IsValid &&
-        EyeColor!.IsValid &&
-        PassportId!.IsValid;
-}
-
-record BirthYear(int Year)
-{
-    public bool IsValid => Year >= 1920 && Year <= 2002;
-}
-
-record IssueYear(int Year)
-{
-    public bool IsValid => Year >= 2010 && Year <= 2020;
-}
-
-record ExpirationYear(int Year)
-{
-    public bool IsValid => Year >= 2020 && Year <= 2030;
+        new Regex("#[0-9a-f]{6}").IsMatch(HairColor!) &&
+        EyeColor!.Value != global::EyeColor.Unknown &&
+        PassportId!.Length == 9 && PassportId.All(char.IsNumber);
 }
 
 enum HeightUnit
@@ -80,12 +65,7 @@ record Height(int Value, HeightUnit Unit)
     }
 }
 
-record HairColor(string Value)
-{
-    public bool IsValid => new Regex(@"#[0-9a-f]{6}").IsMatch(Value);
-}
-
-enum EyeColorType
+enum EyeColor
 {
     Unknown,
     Amb,
@@ -95,23 +75,6 @@ enum EyeColorType
     Grn,
     Hzl,
     Oth,
-}
-
-record EyeColor(EyeColorType Color)
-{
-    public bool IsValid => Color != EyeColorType.Unknown;
-
-    public static EyeColor Parse(string value)
-    {
-        Enum.TryParse(typeof(EyeColorType), value, true, out object? eyeColor);
-
-        return new EyeColor((EyeColorType?)eyeColor ?? EyeColorType.Unknown);
-    }
-}
-
-record PassportId(string Value)
-{
-    public bool IsValid => Value.Length == 9 && Value.All(char.IsNumber);
 }
 
 class Day4 : IDay
@@ -133,14 +96,19 @@ class Day4 : IDay
                 var parts = field.Split(':');
                 string key = parts[0];
                 string value = parts[1];
-                if (key == "byr") passport.BirthYear = new BirthYear(int.Parse(value));
-                if (key == "iyr") passport.IssueYear = new IssueYear(int.Parse(value));
-                if (key == "eyr") passport.ExpirationYear = new ExpirationYear(int.Parse(value));
+                if (key == "byr") passport.BirthYear = ParseInt(value);
+                if (key == "iyr") passport.IssueYear = ParseInt(value);
+                if (key == "eyr") passport.ExpirationYear = ParseInt(value);
                 if (key == "hgt") passport.Height = Height.Parse(value);
-                if (key == "hcl") passport.HairColor = new HairColor(value);
-                if (key == "ecl") passport.EyeColor = EyeColor.Parse(value);
-                if (key == "pid") passport.PassportId = new PassportId(value);
+                if (key == "hcl") passport.HairColor = value;
+                if (key == "pid") passport.PassportId = value;
+                if (key == "ecl")
+                {
+                    Enum.TryParse(typeof(EyeColor), value, true, out object? eyeColor);
+                    passport.EyeColor = (EyeColor?)eyeColor ?? EyeColor.Unknown;
+                }
             }
+
 
             _passports.Add(passport);
         }
@@ -166,5 +134,12 @@ class Day4 : IDay
         }
 
         return validPassports;
+    }
+
+    private static int? ParseInt(string input)
+    {
+        bool success = int.TryParse(input, out int output);
+
+        return success ? output : null;
     }
 }
