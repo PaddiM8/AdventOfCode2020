@@ -68,13 +68,13 @@ record Height(int Value, HeightUnit Unit)
 enum EyeColor
 {
     Unknown,
-    Amb,
-    Blu,
-    Brn,
-    Gry,
-    Grn,
-    Hzl,
-    Oth,
+    Amber,
+    Blue,
+    Brown,
+    Gray,
+    Green,
+    Hazel,
+    Other,
 }
 
 class Day4 : IDay
@@ -101,14 +101,9 @@ class Day4 : IDay
                 if (key == "eyr") passport.ExpirationYear = ParseInt(value);
                 if (key == "hgt") passport.Height = Height.Parse(value);
                 if (key == "hcl") passport.HairColor = value;
+                if (key == "ecl") passport.EyeColor = ParseEyeColor(value);
                 if (key == "pid") passport.PassportId = value;
-                if (key == "ecl")
-                {
-                    Enum.TryParse(typeof(EyeColor), value, true, out object? eyeColor);
-                    passport.EyeColor = (EyeColor?)eyeColor ?? EyeColor.Unknown;
-                }
             }
-
 
             _passports.Add(passport);
         }
@@ -141,5 +136,20 @@ class Day4 : IDay
         bool success = int.TryParse(input, out int output);
 
         return success ? output : null;
+    }
+
+    private static EyeColor? ParseEyeColor(string input)
+    {
+        return input switch
+        {
+            "amb" => EyeColor.Amber,
+            "blu" => EyeColor.Blue,
+            "brn" => EyeColor.Brown,
+            "gry" => EyeColor.Gray,
+            "grn" => EyeColor.Green,
+            "hzl" => EyeColor.Hazel,
+            "oth" => EyeColor.Other,
+            _ => EyeColor.Unknown
+        };
     }
 }
