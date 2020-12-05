@@ -32,12 +32,7 @@ class Day5 : IDay
         return 0;
     }
 
-    private int ParseBoardingPass(string value)
-    {
-        string binaryString = new string(value.Select(c => c == 'B' || c == 'R' ? '1' : '0').ToArray());
-        int row = Convert.ToInt32(binaryString[..7], 2);
-        int column = Convert.ToInt32(binaryString[7..], 2);
-
-        return row * 8 + column;
-    }
+    private int ParseBoardingPass(string value) =>
+        Convert.ToInt32(new string(
+            value.Select(c => c == 'B' || c == 'R' ? '1' : '0').ToArray()), 2);
 }
