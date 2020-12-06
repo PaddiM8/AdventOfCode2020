@@ -22,8 +22,32 @@ class Program
 
         foreach (var day in days)
         {
-            var inputLines = File.ReadAllLines($"input/{day.Name[3..]}.txt");
-            var instance = (IDay)Activator.CreateInstance(day, new[] { inputLines });
+            var constructor = day.GetConstructors()[0];
+            var parameterType = constructor.GetParameters()[0].ParameterType;
+            string inputFile = $"input/{day.Name[3..]}.txt";
+            IDay instance;
+
+            if (parameterType == typeof(string))
+            {
+                string input = File.ReadAllText(inputFile);
+                instance = (IDay)constructor.Invoke(new[] { input });
+            }
+            else if (parameterType == typeof(string[]))
+            {
+                var inputLines = File.ReadAllLines(inputFile);
+                instance = (IDay)constructor.Invoke(new[] { inputLines });
+            }
+            else if (parameterType == typeof(string[][]))
+            {
+                var input = File.ReadAllText(inputFile);
+                var inputSections = input.Split(new[] { "\n\n" }, StringSplitOptions.RemoveEmptyEntries);
+                var lines = inputSections.Select(x => x.Split('\n')).ToArray();
+                instance = (IDay)constructor.Invoke(new[] { lines });
+            }
+            else
+            {
+                throw new Exception($"Missing constructor in {day.Name}");
+            }
 
             WriteLineWithColor($"~= {day.Name} =~", ConsoleColor.Blue);
             WriteLineWithColor("------------", ConsoleColor.Blue);
