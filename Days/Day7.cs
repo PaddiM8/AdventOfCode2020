@@ -45,5 +45,5 @@ class Day7 : IDay
         bagName == search || _bagMap[search].Any(x => ContainsBag(bagName, x.Name));
 
     private int CountNested(string bagName) =>
-        _bagMap[bagName].Sum(child => CountNested(child.Name) * child.Amount + child.Amount);
+        _bagMap[bagName].Sum(child => (CountNested(child.Name) + 1) * child.Amount);
 }
