@@ -6,21 +6,18 @@ using System.Diagnostics;
 
 class Day1 : IDay
 {
-    private readonly IEnumerable<int> _numbers;
+    private readonly HashSet<int> _numbers;
 
     public Day1(string[] inputLines)
     {
-        _numbers = inputLines.Select(int.Parse);
+        _numbers = new HashSet<int>(inputLines.Select(int.Parse));
     }
 
     public object Part1()
     {
         foreach (int x in _numbers)
         {
-            foreach (int y in _numbers)
-            {
-                if (x + y == 2020) return x * y;
-            }
+            if (_numbers.TryGetValue(2020 - x, out int y)) return x * y;
         }
 
         return null;
@@ -32,10 +29,7 @@ class Day1 : IDay
         {
             foreach (var y in _numbers)
             {
-                foreach (var z in _numbers)
-                {
-                    if (x + y + z == 2020) return x * y * z;
-                }
+                if (_numbers.TryGetValue(2020 - x - y, out int z)) return x * y * z;
             }
         }
 
