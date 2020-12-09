@@ -60,6 +60,7 @@ class Day8 : IDay
         var executedIndexes = new HashSet<int>();
         for (int i = 0; i < _instructions.Count;)
         {
+            if (i < 0 || i >= _instructions.Count) return false;
             var instruction = _instructions[i];
             if (executedIndexes.Contains(i)) return false;
             executedIndexes.Add(i);

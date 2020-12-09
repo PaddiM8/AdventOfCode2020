@@ -17,7 +17,8 @@ class Day1 : IDay
     {
         foreach (int x in _numbers)
         {
-            if (_numbers.TryGetValue(2020 - x, out int y)) return x * y;
+            if (_numbers.TryGetValue(2020 - x, out int y))
+                return x * y;
         }
 
         return null;
@@ -29,7 +30,8 @@ class Day1 : IDay
         {
             foreach (var y in _numbers)
             {
-                if (_numbers.TryGetValue(2020 - x - y, out int z)) return x * y * z;
+                if (_numbers.TryGetValue(2020 - x - y, out int z))
+                    return x * y * z;
             }
         }
 
